@@ -1,0 +1,91 @@
+<html>
+	<head>
+		<title> Pong </title>
+		<script src="https://simplycodingcourses.com/files/simplyjs/simply.js"></script>
+		<script>
+			function start(){
+				sjs.open("target",800,600);
+
+				//This is the ball object and properties
+				var ball = new sjs.Image("Images/pizza.png");
+				ball.type = "ball";
+				ball.setSize(50,50);
+				ball.center();
+				ball.friction = 0;
+				ball.bounce();
+				ball.pushRight(6);
+				ball.pushUp(8);
+
+				//This is the first paddle
+				var paddle1 = new sjs.Image("Images/paddle.png");
+				paddle1.type = "paddle";
+				paddle1.centerH();
+				paddle1.setSize(100,20);
+
+				//This is the second paddle
+				var paddle2 = new sjs.Image("Images/paddle2.png");
+				paddle2.type = "paddle";
+				paddle2.bottom().centerH();
+				paddle2.setSize(100,20);
+
+				//This is the code for where we keep the score
+				var score = 0;
+				var score_txt = new sjs.Text("Score: 0", 20, "green");
+
+				//This is the code where we make the paddles move//
+				sjs.keyDown(LEFT_KEY, function(){
+					paddle1.pushLeft();
+					paddle2.pushLeft();
+				});
+
+				sjs.keyDown(RIGHT_KEY, function(){
+					paddle1.pushRight();
+					paddle2.pushRight();
+				});
+
+				//This is the code for the sound in the Pong game//
+				var soundEffect = new Audio('Music/organ.mp3');
+
+				/*This is the code for the ball to bounce off of the paddles*/
+				sjs.onHit("ball", "paddle", function(ball,paddle,){
+					score = score + 1;
+					score_txt.setText("Score: "+score);
+					localStorage.setItem("score", score);
+					if(score %10 == 0){
+						var newball = new sjs.Image("Images/basketball.png");
+						newball.type = "newball";
+						newball.setSize(50,50);
+						newball.center();
+						newball.friction = 0;
+						newball.bounce();
+						newball.pushLeft(2);
+						newball.pushDown(3);
+						sjs.onHit("newball", ["top_screen", "bottom_screen"], function(){
+							window.location = "gameover.html";
+						});
+
+					}
+					soundEffect.play();
+					sjs.bounceOff(ball, paddle,);
+				});
+
+				sjs.onHit("newball", "paddle", function(newball,paddle,){
+					score = score + 1;
+					score_txt.setText("Score: "+score);
+					sjs.bounceOff(newball,paddle);
+				});
+
+
+				sjs.onHit("ball", ["top_screen", "bottom_screen"], function(){
+					window.location = "gameover.html";
+				});
+
+			}//this is the end of the start function
+
+		</script>
+	</head>
+	<body onload="start()">
+		<h1> Pong Game </h1>
+		<div id="target" style="margin:auto;background:grey;"></div>
+	</body>
+</html>

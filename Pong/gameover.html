@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title> Game Over </title>
+		<script src="https://simplycodingcourses.com/files/simplyjs/simply.js"></script>
+		<script>
+			function start(){
+				sjs.open();
+				var gameover_text = new sjs.Text("Ha ha! You lose!", 30, "orange");
+				var gameover_texttwo = new sjs.Text("Continue?", 40, "green");
+				var restartBtn = new sjs.Button("Restart", function(){
+					window.location = "index.html";
+				});
+				gameover_text.centerH();
+				gameover_texttwo.center().offset(0,-40);
+				restartBtn.center();
+
+				var score_txt = new sjs.Text("Score ", 20, "green");
+				score_txt.setText("Score: " + localStorage.getItem("score"));
+			} //end start
+		</script>
+	</head>
+	<body onload="start()">
+		<h1> Game Over! </h1>
+
+		<div id="target" style="margin:auto;background:grey;"></div>
+	</body>
+</html>
