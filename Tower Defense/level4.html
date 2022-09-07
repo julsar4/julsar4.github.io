@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title> Tower Defense </title>
+		<script src="https://simplycodingcourses.com/files/simplyjs/simply.js"></script>
+		<script>
+			function start(){
+				sjs.open("target",800,500);
+
+				//Background
+				var background = new sjs.Image("Images/background.png");
+				background.setSize(2400,sjs.getHeight());
+				var view = new sjs.Image("");
+				view.setSize(800,500);
+				view.moveTo(2400,500);
+				view.node.style.zIndex = -1;
+
+				sjs.scrollable(view,background);
+				sjs.keyDown(LEFT_KEY, function(){
+					view.pushLeft();
+				});
+				sjs.keyDown(RIGHT_KEY, function(){
+					view.pushRight();
+				});
+
+				//Enemy
+				var megaBoss = new sjs.Image("Images/bad.gif");
+				megaBoss.type = "megaBoss";
+				megaBoss.setSize(150,150);
+				megaBoss.friction = 0;
+				megaBoss.lives = 10;
+
+				var attack = setInterval(function(){
+					var mx = Math.floor((Math.random()*400));
+					var my = Math.floor((Math.random()*390));
+					megaBoss.moveTo(-sjs.gx+mx,my);
+					var attacks = [];
+					for(i = 0; i < 3; i++){
+						var mega_attack = new sjs.Image("Images/bullet.png");
+						mega_attack.type = "mega_attack";
+						mega_attack.id = i;
+						mega_attack.setSize(60,15);
+						mega_attack.moveTo(megaBoss.x+25,megaBoss.y+25);
+						mega_attack.friction = 0;
+						mega_attack.noBounds = true;
+						attacks.push(mega_attack);
+						if(mega_attack.id == 0){
+							mega_attack.pushRight(10);
+						} else if(mega_attack.id == 1){
+							mega_attack.pushRight(10);
+							mega_attack.pushDown(5);
+						} else if(mega_attack.id == 2){
+							mega_attack.pushRight(10);
+							mega_attack.pushUp(5);
+						}
+						setTimeout(function(){
+							for(j = 0; j < attacks.length; j++){
+								attacks[j].destroy();
+							}
+						},1500);
+					}
+				},1500);
+
+				//Warning
+				var tracker = new sjs.Image("");
+				tracker.type = "tracker";
+				tracker.setSize(1,sjs.getHeight()+100);
+				tracker.moveTo(background.getWidth()/4,0);
+				sjs.onHit("enemy","tracker",function(x,y){
+					y.destroy();
+					var warning = new sjs.Text("THE ENEMY IS GETTING CLOSER!",20,"red");
+					warning.moveTo(view.x+250,sjs.getHeight()/2);
+					setTimeout(function(){
+						warning.destroy();
+					},2500);
+				});
+				//Land
+				var land = new sjs.Image("");
+				land.type = "land";
+				land.setSize(background.getWidth(),50);
+				land.moveTo(0,440);
+				land.node.style.zIndex = -1;
+
+				//Onhits
+				sjs.onHit(["blocker","gunman"],"land",function(x,y){
+					sjs.stoppedBy(x,y);
+				});
+
+				sjs.onHit("range",["enemy","boss","flyer","megaBoss"],function(x,y){
+					if(x.fire == true){
+						var gbullet = new sjs.Image("Images/bullet.png");
+						gbullet.type = "gbullet";
+						gbullet.moveTo(x.getX()+260,x.getY()+10);
+						gbullet.setSize(40,10);
+						gbullet.friction = 0;
+						gbullet.pushLeft(6);
+						gbullet.noBounds = true;
+						x.fire = false;
+						setTimeout(function(){
+							gbullet.destroy();
+							x.fire = true;
+						},x.firerate);
+					}
+				});
+
+				sjs.onHit("megaBoss","gbullet",function(x,y){
+					x.lives --;
+					if(x.lives == 0){
+						x.destroy();
+						clearInterval(attack);
+						var success = new sjs.Text("You have defeated the leader of the skeleton army!",20,"green");
+						success.offset(view.getX()+250,view.getY()/+250);
+						var nextLevel = new sjs.Button("To The Royal Family",function(){
+							window.location = "win.html";
+						});
+						nextLevel.center();
+					}
+					y.destroy();
+					bolts += 10;
+					bolts_txt.setText("Bolts Collected: "+bolts);
+				});
+
+				sjs.onHit("flyrange",["enemy","boss","flyer","megaBoss"],function(x,y){
+					if(x.fire == true){
+						var gbullet = new sjs.Image("Images/bullet.png");
+						gbullet.type = "gbullet";
+						gbullet.moveTo(x.getX()+585,x.getY()-5);
+						gbullet.setSize(x.bx,x.by);
+						gbullet.friction = 0;
+						gbullet.noBounds = true;
+
+						var dx = y.getX()*1.1 - x.getX()-600;
+						var dy = y.getY() - x.getY();
+						var angle = Math.atan2(dy, dx);
+
+						gbullet.pushRight(17*Math.cos(angle));
+						gbullet.pushDown(17*Math.sin(angle));
+						x.fire = false;
+
+						setTimeout(function(){
+							gbullet.destroy();
+							x.fire=true;
+						},2000);
+					}
+				});
+
+				sjs.onHit("flyguy","mega_attack",function(x,y){
+					x.destroy();
+					y.destroy();
+					x.flyrange.destroy();
+				});
+
+				sjs.onHit("gunman","mega_attack",function(x,y){
+					x.destroy();
+					y.destroy();
+					x.range.destroy();
+				});
+
+				sjs.onHit("blocker","mega_attack",function(x,y){
+					x.destroy();
+					y.destroy();
+				});
+
+				sjs.onHit("flyguy","megaBoss",function(x,y){
+					x.destroy();
+					x.flyrange.destroy();
+				});
+
+				sjs.onHit("gunman","megaBoss",function(x,y){
+					x.destroy();
+					x.range.destroy();
+				});
+
+				sjs.onHit("blocker","megaBoss",function(x,y){
+					x.destroy();
+				});
+
+				bolts_txt = new sjs.Text("Bolts Collected: "+bolts,20,"yellow");
+				bolts_txt.fixed = true;
+			} //End of start function
+
+			//Bolts
+			var bolts = 100;
+			var bolts_txt = "";
+
+			function blocker(){
+				if(bolts >= 20){
+					bolts -= 20;
+					bolts_txt.setText("Bolts Collected: "+bolts);
+					var blocker = new sjs.Image("Images/block.png");
+					blocker.type = "blocker";
+					blocker.setHeight(50);
+					blocker.center().offset(-sjs.gx,10);
+					blocker.lives = 15;
+					blocker.upgraged = false;
+
+					blocker.onMouseDown(function(){
+						blocker.draggable();
+						blocker.follow(sjs.mouse);
+					});
+
+					blocker.onMouseUp(function(){
+						setTimeout(function(){
+							blocker.undraggable();
+						},100);
+						blocker.unfollow(sjs.mouse);
+						blocker.setGravity();
+					});
+
+					blocker.node.ondblclick = function(){
+						if(bolts < 30){
+							var cant_upgrade = new sjs.Text("Not Enough Bolts To Upgrade",20,"green");
+							cant_upgrade.center().offset(-sjs.gx,+220);
+							setTimeout(function(){
+								cant_upgrade.destroy();
+							},1000);
+						} else if(blocker.upgraded){
+							var already_upgraded = new sjs.Text("This Blocker is already upgraded",20,"green");
+							already_upgraded.center().offset(-sjs.gx,+220);
+							setTimeout(function(){
+								already_upgraded.destroy();
+							},1000);
+						} else if(bolts >= 30){
+							var upgrade = new sjs.Button("Upgrade Blocker lives for 30 gold",function(){
+								blocker.upgraded = true;
+								blocker.lives += 250;
+								bolts -= 30;
+								bolts_txt.setText("Bolts Collected: "+bolts);
+								var upgraded = new sjs.Text("Blocker Upgraded",20,"green");
+								upgraded.center().offset(-sjs.gx,+220);
+								setTimeout(function(){
+									upgraded.destroy();
+								},1000);
+								upgrade.destroy();
+							});
+							upgrade.center();
+						}
+					}
+				}
+				else{
+					var not_enough = new sjs.Text("Not Enough Bolts",20,"green");
+					not_enough.center().offset(-sjs.gx,-200);
+					setTimeout(function(){
+						not_enough.destroy();
+					},1000);
+				}
+			}
+
+			function gunman(){
+				if(bolts >= 30){
+					bolts -= 30;
+					bolts_txt.setText("Bolts Collected: "+bolts);
+					var gunman = new sjs.Image("Images/gun.png");
+					gunman.type = "gunman";
+					gunman.setSize(50,50);
+					gunman.center().offset(-sjs.gx,20);
+
+					gunman.onMouseDown(function(){
+						gunman.draggable();
+						gunman.follow(sjs.mouse);
+					});
+
+					gunman.onMouseUp(function(){
+						setTimeout(function(){
+							gunman.undraggable();
+						},100);
+						gunman.unfollow(sjs.mouse);
+						gunman.setGravity();
+					});
+
+					var range = new sjs.Image("");
+					range.type = "range";
+					range.setSize(300,50);
+					range.moveTo(gunman.getX()-300,gunman.getY());
+					range.follow(gunman);
+					range.fire = true;
+					range.firerate = 2000;
+					range.node.style.zIndex = -2;
+					gunman.range = range;
+
+					gunman.node.ondblclick = function(){
+						if(bolts < 40){
+							var cant_upgrade = new sjs.Text("Not Enough Bolts To Upgrade",20,"green");
+							cant_upgrade.center().offset(-sjs.gx,+220);
+							setTimeout(function(){
+								cant_upgrade.destroy();
+							},1000);
+						} else if(gunman.upgraded){
+							var already_upgraded = new sjs.Text("This Gunman is already upgraded",20,"green");
+							already_upgraded.center().offset(-sjs.gx,+220);
+							setTimeout(function(){
+								already_upgraded.destroy();
+							},1000);
+						} else if(bolts >= 40){
+							var upgrade = new sjs.Button("Upgrade Gunman's gun for 40 gold",function(){
+								gunman.upgraded = true;
+								sjs.onHit("range",["enemy","boss","flyer"],function(x,y){
+									if(x.fire == true){
+										var gbullet = new sjs.Image("Images/bullet.png");
+										gbullet.type = "gbullet";
+										gbullet.moveTo(x.getX()+260,x.getY()+10);
+										gbullet.setSize(40,10);
+										gbullet.friction = 0;
+										gbullet.pushLeft(6);
+										gbullet.noBounds = true;
+										x.fire = false;
+										setTimeout(function(){
+											gbullet.destroy();
+											x.fire = true;
+										},1500);
+									}
+								});
+								sjs.onHit("enemy","gbullet",function(x,y){
+									x.destroy();
+									bolts += 10;
+									bolts_txt.setText("Bolts Collected: "+bolts);
+									hits --;
+									if(hits == 0){
+										var success = new sjs.Text("You have killed all of the skeleton army!",20,"green");
+										success.offset(view.getX()+250,view.getY()/+250);
+										var nextLevel = new sjs.Button("Level 4",function(){
+											window.location = "level4.html";
+										});
+										nextLevel.center();
+									}	
+								});
+								bolts -= 40;
+								bolts_txt.setText("Bolts Collected: "+bolts);
+								var upgraded = new sjs.Text("Gunman Upgraded",20,"green");
+								upgraded.center().offset(-sjs.gx,+220);
+								setTimeout(function(){
+									upgraded.destroy();
+								},1000);
+								upgrade.destroy();
+							});
+							upgrade.center();
+						}
+					}
+				}
+				else{
+					var not_enough = new sjs.Text("Not Enough Bolts",20,"green");
+					not_enough.center().offset(-sjs.gx,-200);
+					setTimeout(function(){
+						not_enough.destroy();
+					},1000);
+				}
+			}
+
+			function flyguy(){
+				if(bolts >= 30){
+					bolts -= 30;
+					bolts_txt.setText("Bolts Collected: "+bolts);
+					var flyguy = new sjs.Image("Images/fly.png");
+					flyguy.type = "flyguy";
+					flyguy.setSize(50,50);
+					flyguy.center().offset(-sjs.gx,20);
+
+					flyguy.onMouseDown(function(){
+						flyguy.draggable();
+						flyguy.follow(sjs.mouse);
+					});
+
+					flyguy.onMouseUp(function(){
+						setTimeout(function(){
+							flyguy.undraggable();
+						},100);
+						flyguy.unfollow(sjs.mouse);
+					});
+
+					var flyrange = new sjs.Image("");
+					flyrange.type = "flyrange";
+					flyrange.setSize(600,450);
+					flyrange.moveTo(flyguy.getX()-600,flyguy.getY());
+					flyrange.follow(flyguy);
+					flyrange.noBounds = true;
+					flyrange.fire = true;
+					flyrange.node.style.zIndex = -2;
+					flyguy.flyrange = flyrange;
+					flyrange.bx = 40;
+					flyrange.by = 10;
+
+					flyguy.node.ondblclick = function(){
+						if(bolts < 30){
+							var cant_upgrade = new sjs.Text("Not Enough Bolts To Upgrade",20,"green");
+							cant_upgrade.center().offset(-sjs.gx,+220);
+							setTimeout(function(){
+								cant_upgrade.destroy();
+							},1000);
+						} else if(flyguy.upgraded){
+							var already_upgraded = new sjs.Text("This Pilot is already upgraded",20,"green");
+							already_upgraded.center().offset(-sjs.gx,+220);
+							setTimeout(function(){
+								already_upgraded.destroy();
+							},1000);
+						} else if(bolts >= 30){
+							var upgrade = new sjs.Button("Upgrade Pilot's gun for 30 gold",function(){
+								flyguy.upgraded = true;
+								bolts -= 30;
+								flyrange.bx = 120;
+								flyrange.by = 30;
+								bolts_txt.setText("Bolts Collected: "+bolts);
+								var upgraded = new sjs.Text("Pilot Upgraded",20,"green");
+								upgraded.center().offset(-sjs.gx,+220);
+								setTimeout(function(){
+									upgraded.destroy();
+								},1000);
+								upgrade.destroy();
+							});
+							upgrade.center();
+						}
+					}
+				}
+				else{
+					var not_enough = new sjs.Text("Not Enough Bolts",20,"green");
+					not_enough.center().offset(-sjs.gx,-200);
+					setTimeout(function(){
+						not_enough.destroy();
+					},1000);
+				}
+			}
+		</script>
+		<style>
+			.images{
+				height:50px;
+				margin:15px;
+			}
+		</style>
+	</head>
+	<body onload="start()">
+		<center>
+			<img src="Images/block.png" class="images" onclick="blocker()">
+			<img src="Images/gun.png" class="images" onclick="gunman()">
+			<img src="Images/fly.png" class ="images" onclick="flyguy()">
+			<br>
+			<input type="button" value="20 Bolts" onclick="blocker()">
+			<input type="button" value="30 Bolts" onclick="gunman()">
+			<input type="button" value="30 Bolts" onclick="flyguy()">
+		</center>
+		<div id="target" style="overflow:hidden; background-color:green; margin:auto;"></div>
+	</body>
+</html>

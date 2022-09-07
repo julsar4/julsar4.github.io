@@ -1,0 +1,37 @@
+<html>
+	<head>
+		<title> Tower Defense </title>
+		<script src="https://simplycodingcourses.com/files/simplyjs/simply.js"></script>
+		<script>
+			function start(){
+				sjs.open("target",800,500);
+
+				var background = new sjs.Image("Images/background.png");
+				background.setSize(2400,500);
+
+				var index = new sjs.Text("Tower Defense",30,"black");
+				index.centerH();
+
+				var start = new sjs.Button("Level 1",function(){
+					window.location = "level1.html";
+				});
+				start.center();
+
+				var learn = new sjs.Button("How To Play",function(){
+					window.location = "learn.html";
+				});
+				learn.center().offset(0,-30);
+
+				var author = new sjs.Text("Copyright Apples and Bananas",20,"white");
+				author.bottom().centerH().offset(0,-30);
+
+				var author2 = new sjs.Text("All Rights Reserved",20,"white");
+				author2.bottom().centerH();
+			}
+		</script>
+	</head>
+	<body onload="start()">
+		<h1>Main Menu</h1>
+		<div id="target" style="overflow:hidden; background-color:green; margin:auto;"></div>
+	</body>
+</html>

@@ -1,0 +1,26 @@
+<html>
+	<head>
+		<title> Tower Defense </title>
+		<script src="https://simplycodingcourses.com/files/simplyjs/simply.js"></script>
+		<script>
+			function start(){
+				sjs.open();
+
+				var background = new sjs.Image("Images/background.png");
+				background.setSize(2400,500);
+
+				var teach = new sjs.Text("Enemies are coming to invade your tower, and you are in charge of keeping the tower safe. Click on the buttons under different images to hire different people, but you have to have enough gold to do so. These people will help protect your tower. You must destroy all of the invading army to save the tower. Can you do it?",20,"black");
+				teach.center().offset(0,-100);
+
+				var start = new sjs.Button("Level 1",function(){
+					window.location = "level1.html";
+				});
+				start.center();
+			}
+		</script>
+	</head>
+	<body onload="start()">
+		<h1>Main Menu</h1>
+		<div id="target" style="overflow:hidden; background-color:green; margin:auto;"></div>
+	</body>
+</html>

@@ -1,0 +1,86 @@
+<html>
+	<head>
+		<title> Tower Defense </title>
+		<script src="https://simplycodingcourses.com/files/simplyjs/simply.js"></script>
+		<script>
+			function start(){
+				sjs.open("target",800,500);
+
+				var background = new sjs.Image("Images/background.png");
+				background.setSize(800,500);
+
+				var index = new sjs.Text("You have killed all of the skeleton army! You have been rewarded the warrior medallion",20,"black");
+				index.centerH();
+
+				var index = new sjs.Text("and the royal family thanks you for your services.",20,"black");
+				index.centerH().offset(0,25);
+
+				var medal = new sjs.Image("Images/score.gif");
+				medal.setSize(100,100);
+				medal.center();
+
+				var author = new sjs.Text("Copyright Apples and Bananas",20,"white");
+				author.bottom().centerH().offset(0,-30);
+
+				var author2 = new sjs.Text("All Rights Reserved",20,"white");
+				author2.bottom().centerH();
+
+				var totalEnemies = 1;
+				var enemies = setInterval(function(){
+					var enemy = new sjs.Image("Images/bad.gif");
+					enemy.type = "enemy";
+					enemy.noBounds = true;
+					enemy.friction = 0;
+					enemy.moveTo(0,390);
+					enemy.setSize(50,50);
+					enemy.pushRight(3);
+					totalEnemies --;
+					if(totalEnemies == 0){
+						clearInterval(enemies);
+					}
+				},1500);
+
+				var gunman = new sjs.Image("Images/gun.png");
+					gunman.type = "gunman";
+					gunman.setSize(50,50);
+					gunman.moveTo(700,390);
+
+				var range = new sjs.Image("");
+					range.type = "range";
+					range.setSize(150,50);
+					range.moveTo(gunman.getX()-300,gunman.getY());
+					range.follow(gunman);
+					range.fire = true;
+					range.firerate = 2000;
+					range.node.style.zIndex = -2;
+					gunman.range = range;
+
+				sjs.onHit("range","enemy",function(x,y){
+					if(x.fire == true){
+						var gbullet = new sjs.Image("Images/bullet.png");
+						gbullet.type = "gbullet";
+						gbullet.moveTo(x.getX()+260,x.getY()+10);
+						gbullet.setSize(40,10);
+						gbullet.friction = 0;
+						gbullet.pushLeft(6);
+						gbullet.noBounds = true;
+						x.fire = false;
+						setTimeout(function(){
+							gbullet.destroy();
+							x.fire = true;
+						},x.firerate);
+					}
+				});
+
+				sjs.onHit("enemy","gbullet",function(x,y){
+					x.destroy();
+					y.destroy();
+				});
+			}
+		</script>
+	</head>
+	<body onload="start()">
+		<h1>Main Menu</h1>
+		<div id="target" style="overflow:hidden; background-color:green; margin:auto;"></div>
+	</body>
+</html>
