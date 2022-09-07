@@ -1,0 +1,32 @@
+<html>
+	<head>
+		<title> Race </title>
+			<script src="https://simplycodingcourses.com/files/simply.js"></script>
+			<script>
+				var level = [];
+				function start(){
+					sjs.open("target",1000,600);
+
+					var winner = new sjs.Text("You Won The Trophy!",30,"yellow");
+					var winner2 = new sjs.Text("Congratulations!",30,"yellow");
+					var trophy = new sjs.Image("Images/trophy.png");
+					trophy.setSize(400);
+
+					winner.centerH();
+					winner2.centerH().offset(0,30);
+					trophy.center();
+
+				}
+			</script>
+	</head>
+	<body onload="start()">
+		<h1> Winner </h1>
+			<center>
+			</center>
+		<div id="target" style="margin:auto;background:green;"></div>
+
+		<br/>
+		<div id="output" style="margin: 0 50 0 50;"></div>
+		<br/><br/>
+	</body>
+</html>

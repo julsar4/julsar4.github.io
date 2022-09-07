@@ -1,0 +1,67 @@
+<html>
+	<head>
+		<title> Race </title>
+			<script src="https://simplycodingcourses.com/files/simply.js"></script>
+			<script>
+				var level = [];
+				function start(){
+					sjs.open("target",1000,320);
+
+					var car2 = new sjs.Image("Images/car.png");
+					car2.type = "car2";
+					car2.setSize(70,80);
+					car2.center().offset(0,-100);
+					car2.friction = 0.1;
+					car2.noBounds = true;
+					car2.setGravity(0);
+
+					sjs.onHit("car2","bottom_screen",function(x,y){
+						sjs.stoppedBy(x,y);
+					});
+
+					sjs.onHit("car2","top_screen",function(x,y){
+						sjs.stoppedBy(x,y);
+					});
+
+					sjs.keyDown(W_KEY,function(){
+						car2.pushUp(3);
+					});
+
+
+					sjs.open("target2",1000,320);
+
+					var car = new sjs.Image("Images/car.png");
+					car.type = "car";
+					car.setSize(70,80);
+					car.center().offset(0,-100);
+					car.friction = 0.1;
+					car.noBounds = true;
+					car.setGravity(0);
+
+					sjs.onHit("car","bottom_screen",function(x,y){
+						sjs.stoppedBy(x,y);
+					});
+
+					sjs.onHit("car","top_screen",function(x,y){
+						sjs.stoppedBy(x,y);
+					});
+
+					sjs.keyDown(UP_KEY,function(){
+						car.pushUp(3);
+					});
+
+				}
+			</script>
+	</head>
+	<body onload="start()">
+		<h1> Race </h1>
+			<center>
+			</center>
+		<div id="target" style="margin:auto;background:green;"></div>
+		<div id="target2" style="margin:auto;background:grey;"></div>
+
+		<br/>
+		<div id="output" style="margin: 0 50 0 50;"></div>
+		<br/><br/>
+	</body>
+</html>
