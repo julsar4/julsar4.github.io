@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title> Planet Saved </title>
+		<script src="https://simplycodingcourses.com/files/simplyjs/simply.js"></script>
+		<script>
+			function start(){
+				sjs.open();
+
+				var background = new sjs.Image("Images/space3.png");
+				background.setSize(500,500);
+
+				var win_text = new sjs.Text("You have saved the planet from doom. Good work.",20,"white");
+				win_text.centerH();
+				win_text.offset(0,30);
+
+				var win_btn = new sjs.Button("Main Menu",function(){
+					window.location = "index.html";
+				});
+				win_btn.center();
+
+				var score_text = new sjs.Text("Score: 0",21,"red");
+				score_text.setText("Score: " + localStorage.getItem("score"));
+			}
+		</script>
+	</head>
+	<body onload="start()">
+		<h1> You Win </h1>
+
+		<div id="target" style="margin:auto;background:grey;"></div>
+	</body>
+</html>

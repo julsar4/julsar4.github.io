@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title> Menu </title>
+			<script src="https://simplycodingcourses.com/files/simplyjs/simply.js"></script>
+			<script>
+				function start(){
+					sjs.open();
+
+					var background = new sjs.Image("Images/background.png");
+					background.setSize(1500,400);
+
+					var creator_text = new sjs.Text("Apples And Bananas Presents:",20,"white");
+					creator_text.centerH();
+
+					var menu_text = new sjs.Text("Adventurer Z: The Rogue Planet",30,"red");
+					menu_text.centerH();
+					menu_text.offset(0,40);
+
+					var create = new sjs.Button("Design Level",function(){
+						window.location = "platform.html";
+					});
+
+					var play = new sjs.Button("Play Game",function(){
+						window.location = "level1.html";
+					});
+
+					play.center();
+					play.offset(60,0);
+
+					create.center();
+					create.offset(-60,0);
+				}
+			</script>
+	</head>
+	<body onload="start()">
+		<h1> Platform Game </h1>
+
+		<div id="target" style="margin:auto;background:grey;"></div>
+	</body>
+</html>

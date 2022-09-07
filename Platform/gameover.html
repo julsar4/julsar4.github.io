@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title> Game Over </title>
+		<script src="https://simplycodingcourses.com/files/simplyjs/simply.js"></script>
+		<script>
+			function start(){
+				sjs.open();
+
+				var background = new sjs.Image("Images/space6.png");
+				background.setSize(500,500);
+
+				var defeat_text = new sjs.Text("Adventurer Z has been defeated. The planet has fallen.",20,"white");
+				defeat_text.center();
+				defeat_text.offset(0,-60);
+
+				var failed_text = new sjs.Text("Mission Failed",30,"red");
+				failed_text.center();
+				failed_text.offset(0,-30);
+
+				var defeat_btn = new sjs.Button("Main Menu",function(){
+					window.location = "index.html";
+				});
+				defeat_btn.center();
+
+				var score_text = new sjs.Text("Score: 0",21,"red");
+				score_text.setText("Score: " + localStorage.getItem("score"));
+			}
+		</script>
+	</head>
+	<body onload="start()">
+		<h1> Game Over </h1>
+
+		<div id="target" style="margin:auto;background:grey;"></div>
+	</body>
+</html>
