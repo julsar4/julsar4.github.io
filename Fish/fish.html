@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title> Fish Game </title>
+		<script src="https://simplycodingcourses.com/files/simplyjs/simply.js"></script>
+		<script>
+			function start(){
+				sjs.open("target", 800, 500);
+				var background = new sjs.Image("Images/space5.png");
+				background.setSize(sjs.getWidth(), sjs.getHeight());
+
+				//This is the code for the audio.
+				var playM = new Audio('Music/mad_robots.mp3');
+				var toggle = true;
+				var musicOn = false;
+				sjs.keyDown(SPACE_KEY, function(){
+					if(toggle == true){
+						if(musicOn == false){
+							playM.play();
+							musicOn = true;
+						} else {
+							playM.pause();
+							musicOn = false;
+						}
+						toggle = false;
+						setTimeout(function(){
+							toggle = true;
+						},1000);
+					}
+				});
+
+				var audio_text = new sjs.Text("Press the space bar to start music and stop the music",15,"white");
+				audio_text.centerH();
+				
+				setTimeout(function(){
+					audio_text.destroy();
+				},2000);
+
+				//This is the code where the player sizes and other starting things will go.
+				var player = new sjs.Image("Images/battleship_right.png");
+				player.type = "player";
+				player.setSize(75,35);
+				player.friction = 0.2;
+				player.accel = 0.5;
+
+				//These make the player move.
+				sjs.keyDown(RIGHT_KEY, function(){
+					player.setImage("Images/battleship_right.png");
+					player.pushRight();
+				});
+				sjs.keyDown(LEFT_KEY, function(){
+					player.setImage("Images/battleship_left.png");
+					player.pushLeft();
+				});
+				sjs.keyDown(UP_KEY, function(){
+					player.pushUp();
+				});
+				sjs.keyDown(DOWN_KEY, function(){
+					player.pushDown();
+				});
+
+				//This is the code for the power-up
+				setInterval(function(){
+					var x = Math.floor(Math.random() * 783);
+					var y = Math.floor(Math.random() * 470);
+					var powerUp = new sjs.Image("Images/crumbs.png");
+					powerUp.type = "powerUp";
+					powerUp.setGravity();
+					powerUp.setSize(17,30);
+					powerUp.noBounds = true;
+					powerUp.moveTo(x,y);
+					powerUp.friction = 0.2;
+				}, 5000);
+
+				sjs.onHit("powerUp", "bottom_screen",function(x,y,){
+					x.destroy();
+				});
+
+				sjs.onHit("player", "powerUp", function(x,y,){
+					x.grow(60,30);
+					setTimeout(function(){
+						x.grow(-60,-30);
+					}, 4000);
+					y.destroy();
+				});
+
+				//This is the code for the enemies of the game
+				setInterval(function(){
+					var speed = Math.round(21 + Math.random()*31);
+					if(Math.random() > 0.5){
+						var enemy = new sjs.Image("Images/flash_right.png");
+						enemy.type = "enemy";
+						enemy.setSize(100,50);
+						enemy.friction = 0;
+						enemy.noBounds = true;
+						enemy.pushRight(speed);
+						enemy.scaleSize(.5 + Math.random()*1.2);
+						enemy.moveTo(-enemy.getWidth(), Math.random()*(enemy.getClamp().y));
+					} else {
+						var enemy = new sjs.Image("Images/green_left.png");
+						enemy.type = "enemy";
+						enemy.setSize(100,50);
+						enemy.friction = 0;
+						enemy.noBounds = true;
+						enemy.pushLeft(speed);
+						enemy.scaleSize(.5 + Math.random()*1.2);
+						enemy.moveTo(sjs.getWidth(), Math.random()*(enemy.getClamp().y));
+					}
+				}, 1000);
+
+				sjs.left_screen.offset(-500);
+				sjs.right_screen.offset(500);
+				sjs.onHit("enemy", ["right_screen", "left_screen"], function(x, y){
+					x.destroy();
+				});
+
+				//This is the code for the score
+				var score = 0;
+				var score_txt = new sjs.Text("Score: 0", 20, "red");
+
+				sjs.onHit("player","enemy", function(x,y){
+					if(x.getWidth() > y.getWidth() && x.getHeight() > y.getHeight()) {
+						x.grow(10,5);
+						score = score + 1;
+						score_txt.setText("Score " + score);
+						localStorage.setItem("score", score);
+						y.destroy();
+						if(score >= 20){
+							window.location = "win.html";
+						}
+					} else {
+						x.destroy();
+						window.location = "gameover.html";
+					}
+				});
+			} //end start
+		</script>
+	</head>
+	<body onload="start()">
+		<h1> Fish Game </h1>
+
+		<div id="target" style="margin:auto;background:grey;"></div>
+	</body>
+</html>

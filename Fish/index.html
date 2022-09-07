@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title> Menu </title>
+		<script src="https://simplycodingcourses.com/files/simplyjs/simply.js"></script>
+		<script>
+			function start(){
+				sjs.open();
+				var menu_text = new sjs.Text("MENU", 30, "green");
+				menu_text.centerH();
+				
+				var inst_text = new sjs.Text("Use the arow keys to move the spaceship around. Make sure to only collide with spaceships that are smaller than you.", 20, "#ff0");
+				inst_text.centerH().offset(0,50);
+
+				var startBtn = new sjs.Button("Start", function(){
+					window.location = "fish.html";
+				});
+				startBtn.center();
+
+				var spc = new sjs.Image("Images/battleship_right.png");
+				spc.center().offset(40,-40);
+				spc.setSize(70,70);
+
+				var spc = new sjs.Image("Images/battleship_left.png");
+				spc.center().offset(-110,-40);
+				spc.setSize(70,70);
+
+				var name_text = new sjs.Text("Created by Apples and Bananas", 20, "green");
+				name_text.bottom().centerH();
+			}
+		</script>
+	</head>
+	<body onload="start()">
+		<h1> Fish </h1>
+
+		<div id="target" style="margin:auto;background:grey;"></div>
+	</body>
+</html>
